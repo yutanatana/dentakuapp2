@@ -18,7 +18,9 @@ const Calculator: React.FC = () => {
   const handleOperatorClick = (op: string) => {
     if (operator === null) {
       setPreviousValue(currentValue);
-      setCurrentValue('0');
+      //setCurrentValue('0');
+      //表示用のcurrentValueと計算用のvalueを分けた方が良いかも
+      setCurrentValue(currentValue + op);
     }
     setOperator(op);
   };
@@ -58,6 +60,7 @@ const Calculator: React.FC = () => {
     setOperator(null);
   };
 
+  //計算過程が表示できるように修正したい
   return (
     <div className="calculator">
       <Display value={currentValue} />
