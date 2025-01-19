@@ -4,69 +4,64 @@ import Display from './Display';
 
 const Calculator: React.FC = () => {
   const [currentValue, setCurrentValue] = useState('0');
-  const [previousValue, setPreviousValue] = useState('');
+  const [realtimeValue, setRealtimeValue] = useState('');
+  const [resultValue, setResultValue] = useState('0');
+  const [operatorFlug, setOperatorFlug] = useState(false);
   const [operator, setOperator] = useState<string | null>(null);
 
   const handleNumberClick = (number: string) => {
     if (currentValue === '0') {
       setCurrentValue(number);
+      setRealtimeValue(realtimeValue + number);
+      setOperatorFlug(true);
     } else {
       setCurrentValue(currentValue + number);
+      setRealtimeValue(realtimeValue + number);
+      setOperatorFlug(true);
     }
+    //setResultValue(eval(realtimeValue));//ここでエラーが発生してそう
   };
 
   const handleOperatorClick = (op: string) => {
-    if (operator === null) {
-      setPreviousValue(currentValue);
-      //setCurrentValue('0');
-      //表示用のcurrentValueと計算用のvalueを分けた方が良いかも
-      setCurrentValue(currentValue + op);
+    if(operatorFlug == true){
+      if (operator === null) {
+        setCurrentValue('0');
+        //初回
+        setRealtimeValue(currentValue + op);
+        setOperatorFlug(false);
+        
+      }
+      setOperator(op);
+      //初回以降
+      setRealtimeValue(realtimeValue + op);
+      setOperatorFlug(false);
     }
-    setOperator(op);
+
   };
 
+  //この計算ロジックだと2つまでしか計算出来ない
   const calculate = () => {
-    if (!operator || !previousValue) return;
-
-    const prev = parseFloat(previousValue);
-    const curr = parseFloat(currentValue);
-
-    let result = 0;
-    switch (operator) {
-      case '+':
-        result = prev + curr;
-        break;
-      case '-':
-        result = prev - curr;
-        break;
-      case '*':
-        result = prev * curr;
-        break;
-      case '/':
-        result = curr !== 0 ? prev / curr : 0;
-        break;
-      default:
-        break;
-    }
-
-    setCurrentValue(result.toString());
-    setPreviousValue('');
+    setResultValue(eval(realtimeValue));
     setOperator(null);
   };
 
   const handleClear = () => {
     setCurrentValue('0');
-    setPreviousValue('');
+    setRealtimeValue('');
+    setResultValue('0');
     setOperator(null);
   };
 
   //計算過程が表示できるように修正したい
+  //2行目はリアルタイムの計算結果を表示する
   return (
     <div className="calculator">
-      <Display value={currentValue} />
+      {/* <Display value={currentValue} /> */}
+      <Display value={realtimeValue} />
+      <Display value={resultValue} />
       <div className="calculator-buttons">
         <div className="numbers">
-          {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map((num) => (
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map((num) => (
             <Button key={num} label={num} onClick={() => handleNumberClick(num)} />
           ))}
         </div>
